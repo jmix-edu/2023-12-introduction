@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://jmix.io/schema/ui/window"
+        caption="msg://taskEdit.caption"
+        focusComponent="form">
+    <data>
+        <instance id="taskDc"
+                  class="com.company.taskmanagement.entity.Task">
+            <fetchPlan extends="_base">
+                <property name="assignee" fetchPlan="_base"/>
+                <property name="project" fetchPlan="_base"/>
+                <property name="subtasks" fetchPlan="_base"/>
+            </fetchPlan>
+            <loader/>
+            <collection id="subtasksDc" property="subtasks"/>
+        </instance>
+        <collection id="projectsDc"
+                    class="com.company.taskmanagement.entity.Project">
+            <fetchPlan extends="_base"/>
+            <loader id="projectsDl">
+                <query>
+                    <![CDATA[select e from tm_Project e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+        <screenSettings id="settingsFacet" auto="true"/>
+    </facets>
+    <actions>
+        <action id="windowCommitAndClose" caption="msg:///actions.Ok"
+                icon="EDITOR_OK"
+                primary="true"
+                shortcut="${COMMIT_SHORTCUT}"/>
+        <action id="windowClose"
+                caption="msg:///actions.Close"
+                icon="EDITOR_CANCEL"/>
+    </actions>
+    <dialogMode height="600"
+                width="800"/>
+    <layout spacing="true" expand="subsTasks">
+        <scrollBox id="scrollBox" spacing="true">
+            <form id="form" dataContainer="taskDc">
+                <column width="350px">
+                    <textField id="nameField" property="name"/>
+                    <dateField id="dueDateField" property="dueDate"/>
+                    <entityPicker id="assigneeField" property="assignee">
+                        <actions>
+                            <action id="entityLookup" type="entity_lookup"/>
+                            <action id="entityClear" type="entity_clear"/>
+                        </actions>
+                    </entityPicker>
+                    <entityComboBox id="projectField"
+                                    property="project"
+                                    optionsContainer="projectsDc">
+                        <actions>
+                            <action id="entityClear" type="entity_clear"/>
+                        </actions>
+                    </entityComboBox>
+                    <comboBox id="priorityField" property="priority"/>
+                </column>
+            </form>
+        </scrollBox>
+        <table id="subsTasks"
+               width="100%"
+               dataContainer="subtasksDc">
+            <actions>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
+            </actions>
+            <buttonsPanel id="buttonsPanel"
+                          alwaysVisible="true">
+                <button id="createBtn" action="subsTasks.create"/>
+                <button id="editBtn" action="subsTasks.edit"/>
+                <button id="removeBtn" action="subsTasks.remove"/>
+            </buttonsPanel>
+            <columns>
+                <column id="name"/>
+                <column id="estimation"/>
+                <column id="completed"/>
+            </columns>
+        </table>
+        <hbox id="editActions" spacing="true">
+            <button id="commitAndCloseBtn" action="windowCommitAndClose"/>
+            <button id="closeBtn" action="windowClose"/>
+        </hbox>
+    </layout>
+</window>
